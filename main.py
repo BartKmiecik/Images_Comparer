@@ -10,36 +10,10 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import re
 
-# img1 = cv2.imread("Img/Org.png")
-# img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-# h, w = img1.shape
-#
-# img2 = cv2.imread("Img/V1.jpg")
-# img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-# # img3 = cv2.imread('bike.jpg')
-# # img3 = cv2.cvtColor(img3, cv2.COLOR_BGR2GRAY)
-
-
-
-# match_error12, diff12 = error(img1, img2)
-# # match_error13, diff13 = error(img1, img3)
-# # match_error23, diff23 = error(img2, img3)
-#
-# print("Image matching Error between image 1 and image 2:",match_error12)
-# # print("Image matching Error between image 1 and image 3:",match_error13)
-# # print("Image matching Error between image 2 and image 3:",match_error23)
-#
-# plt.imshow(diff12,'gray'),plt.title("image1 - Image2"),plt.axis('off')
-
-
-
-# import matplotlib.pyplot as plt
 screen_width, screen_height = pyautogui.size()
 width, height = 960, 540
-folder_one = Path("NBV_Org")
-# first_list = list(folder_one.glob("*.png"))
-folder_two = Path("NBV_Rend")
-# second_list = list(folder_two.glob("*.jpg"))
+folder_one = Path("ToExclude/NBV_Org")
+folder_two = Path("ToExclude/NBV_Rend")
 
 def _p_file_sort_key(file_path):
     """Given a file in the form P(digits)_cor.csv, return digits as an int"""
@@ -154,7 +128,6 @@ def check_color():
 
 
 check_color()
-# root.geometry('1010x740+200+200')
 img = Image.open(first_list[counter_first]).convert('RGB')
 img = img.resize((width, height))
 stgImg = ImageTk.PhotoImage(img)
@@ -170,31 +143,8 @@ left_label.grid(column=0, row=1,sticky="news")
 right_label = ttk.Label(text = str(color_checker_right))
 right_label.grid(column=2, row=1,sticky="news")
 
-# left_btn = ttk.Button(root, text="Left", command=Left_Window)
-# left_btn.grid(column=0, row=3,sticky="news")
-# right_btn = ttk.Button(root, text="Right", command=Right_Window)
-# right_btn.grid(column=1, row=3,sticky="news")
-# left_btn = ttk.Button(root, text="Left", command=Both_Left)
-# left_btn.grid(column=0, row=3, sticky="news")
-# right_btn = ttk.Button(root, text="Right", command=Both_Right)
-# right_btn.grid(column=1, row=3, sticky="news")
-match_error12, diff12 = error(np.asarray(img), np.asarray(img2))
-match_error_label = ttk.Label(text = str(match_error12))
-match_error_label.grid(column=0, row=2,sticky="news")
-# diff_img_shaped = np.reshape(diff12, (width, height))
-diff_img = Image.fromarray(diff12)
-stgImg3 = ImageTk.PhotoImage(diff_img)
-label3 = ttk.Label(root, image=stgImg3)
-label3.grid(column=0, row=4, sticky="news")
 
-match_error12, diff12 = error(np.asarray(img), np.asarray(img2))
-    # diff_img_shaped = np.reshape(diff12, (width, height))
-diff_img = Image.fromarray(diff12)
-stgImg3 = ImageTk.PhotoImage(diff_img)
-label3 = ttk.Label(root, image=stgImg3)
-label3.grid(column=0, row=4, sticky="news")
-
-
+show_diff()
 
 root.bind('<KeyRelease>',key_released )
 root.mainloop()
