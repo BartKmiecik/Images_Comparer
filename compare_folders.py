@@ -14,10 +14,12 @@ import re
 import pandas as pd
 
 def error(img1, img2):
+   img1 = cv2.cvtColor(img1, cv2.COLOR_RGB2GRAY)
+   img2 = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
    diff = cv2.subtract(img1, img2)
    err = np.sum(diff**2)
    mse = err/(float(height*width))
-   msre = np.sqrt(mse)
+   # msre = np.sqrt(mse)
    return mse, diff
 
 # screen_width, screen_height = pyautogui.size()
