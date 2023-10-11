@@ -1,5 +1,7 @@
 from tkinter import *
-from tkinter import ttk
+import tkinter as tk
+from tkinter import ttk, filedialog
+from tkinter.filedialog import askopenfilename
 import os
 from pathlib import Path
 from PIL import Image, ImageTk
@@ -12,15 +14,29 @@ import re
 
 screen_width, screen_height = pyautogui.size()
 width, height = 960, 540
-folder_one = Path("ToExclude/NBV_Org")
-folder_two = Path("ToExclude/NBV_Rend")
+references_images_directory = filedialog.askdirectory(title="Select Reference Folder")
+renders_images_directory = filedialog.askdirectory(title="Select Renders Folder")
+folder_one = Path(references_images_directory)
+folder_two = Path(renders_images_directory)
+
+# folder_one = Path('ToExclude/NBV_Org')
+# folder_two = Path("ToExclude/NBV_Rend")
 
 def _p_file_sort_key(file_path):
-    """Given a file in the form P(digits)_cor.csv, return digits as an int"""
-    return int(re.match(r"(\d+)", file_path.name).group(1))
+    return int(re.match(r"(\d+)", file_path.name[-6:].replace('_', '0')).group(1))
 
-first_list = sorted(folder_one.glob("*.png"), key=_p_file_sort_key)
-second_list = sorted(folder_two.glob("*.jpg"), key=_p_file_sort_key)
+types = ("*.png", "*.jpg")
+first_list, second_list = [], []
+for typed in types:
+    f1 = sorted(folder_one.glob(typed), key=_p_file_sort_key)
+    if len(f1) > 0:
+        first_list.extend(f1)
+    f2 = sorted(folder_two.glob(typed), key=_p_file_sort_key)
+    if len(f2) > 0:
+        second_list.extend(f2)
+
+# first_list = sorted(folder_one.glob("*.png"), key=_p_file_sort_key)
+# second_list = sorted(folder_two.glob("*.jpg"), key=_p_file_sort_key)
 
 
 counter_first = 0
@@ -89,17 +105,22 @@ def Both_Right():
     label2.image = stgImg2
 
 def key_released(e):
+    global counter_first
     if e.keycode == 37:
         Both_Left()
     if e.keycode == 39:
         Both_Right()
     show_diff()
+    label4 = ttk.Label(text="Frame: " + str(counter_first))
+    label4.grid(column=1, row=4, sticky="news")
+    label4.configure()
 
 root = Tk()
-root.configure(bg='black',bd=0, highlightthickness=0)
+root.configure(bg='#BAC1F5',bd=0, highlightthickness=0)
 frame = Frame(root, bg='black',highlightthickness=0)
 frame.configure(bd=0, highlightthickness=0)
 root.resizable(True, False)
+root.state('zoomed')
 color_checker_left = (0, 0, 0)
 color_checker_right = (0, 0, 0)
 def check_color():
@@ -143,6 +164,19 @@ left_label.grid(column=0, row=1,sticky="news")
 right_label = ttk.Label(text = str(color_checker_right))
 right_label.grid(column=2, row=1,sticky="news")
 
+# columns = ('Frame', 'Differenece(MSE)')
+# tree = ttk.Treeview(root, columns=columns, show='headings')
+#
+# tree.heading('Frame', text='Frame')
+# tree.heading('Differenece(MSE)', text='Differenece(MSE)')
+# for i in range(36):
+#     tree.insert('', tk.END, values=str(i))
+#
+#
+# tree.grid(column=1, row=4, sticky="ns")
+
+label4 = ttk.Label(text ="Frame: " +  str(0))
+label4.grid(column=1, row=4, sticky="news")
 
 show_diff()
 
