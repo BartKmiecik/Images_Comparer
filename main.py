@@ -25,23 +25,41 @@ folder_two = Path(renders_images_directory)
 def _p_file_sort_key(file_path):
     return int(re.match(r"(\d+)", file_path.name[-6:].replace('_', '0')).group(1))
 
-types = ("*.png", "*.jpg")
+types = ('*.png', '*.jpg')
+path_list = []
+carpaint_types = ('*')
 first_list, second_list = [], []
-for typed in types:
-    f1 = sorted(folder_one.glob(typed), key=_p_file_sort_key)
-    if len(f1) > 0:
-        first_list.extend(f1)
-    f2 = sorted(folder_two.glob(typed), key=_p_file_sort_key)
-    if len(f2) > 0:
-        second_list.extend(f2)
+
+third_list = folder_two.glob(carpaint_types)
+for s in third_list:
+    second_list.append(os.path.basename(s))
+
+
+for carpaint in folder_one.glob(carpaint_types):
+    if os.path.basename(carpaint) in second_list:
+        path_list.append(os.path.basename(carpaint))
+
+
+first_list, second_list = [], []
+
+for path in path_list:
+    for typed in types:
+        f1 = sorted(folder_one.glob(path + "/" + typed), key=_p_file_sort_key)
+        if len(f1) > 0:
+            first_list.extend(f1)
+            print(path + "/" + typed)
+        f2 = sorted(folder_two.glob(path + "/" + typed), key=_p_file_sort_key)
+        if len(f2) > 0:
+            second_list.extend(f2)
+            print(path + "/" + typed)
 
 # first_list = sorted(folder_one.glob("*.png"), key=_p_file_sort_key)
 # second_list = sorted(folder_two.glob("*.jpg"), key=_p_file_sort_key)
 
 
 counter_first = 0
-counter_second = 0
-img, img2 = None, None
+counter_second = 36
+img, img2, img3, img4 = None, None, None, None
 
 def error(img1, img2):
    # img1 = cv2.cvtColor(img1, cv2.COLOR_RGB2GRAY)
@@ -68,30 +86,44 @@ def show_diff():
     match_error_label.configure()
 
 def Left_Window():
-    global counter_first
-    global img
+    global counter_first, counter_second
+    global img, img2, img3, img4
     counter_first += 1
+    counter_second += 1
     if counter_first > len(first_list)-1: counter_first = 0
+    if counter_second > len(first_list)-1: counter_second = 0
     img = Image.open(first_list[counter_first]).convert('RGB')
     img = img.resize((width, height))
     stgImg = ImageTk.PhotoImage(img)
     label1.configure(image=stgImg)
     label1.image = stgImg
-def Right_Window():
-    global counter_second
-    global img2
-    counter_second += 1
-    if counter_second > len(second_list)-1: counter_second = 0
-    img2 = Image.open(second_list[counter_second]).convert('RGB')
+    img2 = Image.open(second_list[counter_first]).convert('RGB')
     img2 = img2.resize((width, height))
     stgImg2 = ImageTk.PhotoImage(img2)
     label2.configure(image=stgImg2)
     label2.image = stgImg2
+    img3 = Image.open(first_list[counter_second]).convert('RGB')
+    img3 = img3.resize((width, height))
+    stgImg3 = ImageTk.PhotoImage(img3)
+    label3.configure(image=stgImg3)
+    label3.image = stgImg3
+    img4 = Image.open(second_list[counter_second]).convert('RGB')
+    img4 = img4.resize((width, height))
+    stgImg4 = ImageTk.PhotoImage(img4)
+    label4.configure(image=stgImg4)
+    label4.image = stgImg4
+
+# def Right_Window():
+#     global counter_second
+#     global img2
+#     counter_second += 1
+#     if counter_second > len(second_list)-1: counter_second = 0
+
 def Both_Left():
     Left_Window()
-    Right_Window()
+    # Right_Window()
 def Both_Right():
-    global counter_first, counter_second, img, img2
+    global counter_first, counter_second, img, img2, img3, img4
     counter_first -= 1
     if counter_first < 0: counter_first = len(first_list)-1
     img = Image.open(first_list[counter_first]).convert('RGB')
@@ -100,12 +132,22 @@ def Both_Right():
     label1.configure(image=stgImg)
     label1.image = stgImg
     counter_second -= 1
-    if counter_second < 0: counter_second = len(second_list)-1
-    img2 = Image.open(second_list[counter_second]).convert('RGB')
+    if counter_second < 0: counter_second = len(first_list)-1
+    img2 = Image.open(second_list[counter_first]).convert('RGB')
     img2 = img2.resize((width, height))
     stgImg2 = ImageTk.PhotoImage(img2)
     label2.configure(image=stgImg2)
     label2.image = stgImg2
+    img3 = Image.open(first_list[counter_second]).convert('RGB')
+    img3 = img3.resize((width, height))
+    stgImg3 = ImageTk.PhotoImage(img3)
+    label3.configure(image=stgImg3)
+    label3.image = stgImg3
+    img4 = Image.open(second_list[counter_second]).convert('RGB')
+    img4 = img4.resize((width, height))
+    stgImg4 = ImageTk.PhotoImage(img4)
+    label4.configure(image=stgImg4)
+    label4.image = stgImg4
 
 def key_released(e):
     global counter_first
@@ -124,8 +166,8 @@ frame = Frame(root, bg='black',highlightthickness=0)
 frame.configure(bd=0, highlightthickness=0)
 root.resizable(True, False)
 root.state('zoomed')
-color_checker_left = (0, 0, 0)
-color_checker_right = (0, 0, 0)
+# color_checker_left = (0, 0, 0)
+# color_checker_right = (0, 0, 0)
 def check_color():
     global color_checker_left
     global color_checker_right
@@ -151,21 +193,31 @@ def check_color():
     root.after(100, check_color)
 
 
-check_color()
+# check_color()
 img = Image.open(first_list[counter_first]).convert('RGB')
 img = img.resize((width, height))
 stgImg = ImageTk.PhotoImage(img)
 label1 = ttk.Label(root, image=stgImg)
 label1.grid(column=0, row=0,sticky="news")
-img2 = Image.open(second_list[counter_second]).convert('RGB')
+img2 = Image.open(second_list[counter_first]).convert('RGB')
 img2 = img2.resize((width, height))
 stgImg2 = ImageTk.PhotoImage(img2)
 label2 = ttk.Label(root, image=stgImg2)
 label2.grid(column=1, row=0,sticky="news")
-left_label = ttk.Label(text = str(color_checker_left))
-left_label.grid(column=0, row=1,sticky="news")
-right_label = ttk.Label(text = str(color_checker_right))
-right_label.grid(column=2, row=1,sticky="news")
+img3 = Image.open(first_list[counter_second]).convert('RGB')
+img3 = img3.resize((width, height))
+stgImg3 = ImageTk.PhotoImage(img3)
+label3 = ttk.Label(root, image=stgImg3)
+label3.grid(column=0, row=1,sticky="news")
+img4 = Image.open(second_list[counter_second]).convert('RGB')
+img4 = img4.resize((width, height))
+stgImg4 = ImageTk.PhotoImage(img4)
+label4 = ttk.Label(root, image=stgImg4)
+label4.grid(column=1, row=1,sticky="news")
+# left_label = ttk.Label(text = str(color_checker_left))
+# left_label.grid(column=0, row=1,sticky="news")
+# right_label = ttk.Label(text = str(color_checker_right))
+# right_label.grid(column=2, row=1,sticky="news")
 
 # columns = ('Frame', 'Differenece(MSE)')
 # tree = ttk.Treeview(root, columns=columns, show='headings')
@@ -178,10 +230,10 @@ right_label.grid(column=2, row=1,sticky="news")
 #
 # tree.grid(column=1, row=4, sticky="ns")
 
-label4 = ttk.Label(text ="Frame: " +  str(0))
-label4.grid(column=1, row=4, sticky="news")
+# label4 = ttk.Label(text ="Frame: " +  str(0))
+# label4.grid(column=1, row=4, sticky="news")
 
-show_diff()
+# show_diff()
 
 root.bind('<KeyRelease>',key_released )
 root.mainloop()
