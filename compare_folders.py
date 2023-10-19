@@ -77,4 +77,4 @@ for f in range(len(group_of_folders1)):
     compareColors(group_of_folders1[f], group_of_folders2[f])
 
 df = pd.DataFrame(main_data)
-df.to_csv("Pathfinder.csv")
+df.to_csv("Juke.csv")
